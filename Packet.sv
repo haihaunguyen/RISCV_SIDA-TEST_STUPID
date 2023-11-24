@@ -9,7 +9,7 @@ class Packet;
     typedef enum {ADD = 0, SUB , SLL , SLT , SLTU , XOR , SRL , SRA , OR , AND, JALR, LB, LH, LW, LBU, LHU} operand;
     operand op;
     constraint Limit{
-        opcode inside{s7'b0110011, 7'b0010011, 7'b1100111, 7'b0000011};
+        opcode inside{7'b0110011, 7'b0010011, 7'b1100111, 7'b0000011};
         funct3 inside{0, 3'b001,3'b010,3'b011,3'b100,3'b101,3'b110,3'b111};
         funct7 inside{0, 32};   
         rd inside {[1:31]};
