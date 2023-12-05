@@ -103,20 +103,21 @@ module Register_File(
             Data_A <= r[Addr_A];
             Data_B <= r[Addr_B];
      
-            if (rwe == 1) begin //write
+            if (rwe === 1) begin //write
+                if (Addr_D != 0)
                 r[Addr_D] <= Data_D;
             end else
-            if (rwe == 2) begin //lh
+            if (rwe === 2) begin //lh
                 r[Addr_D][15:0] <= Data_D[15:0];
             end else
-            if (rwe == 3) begin //lb
+            if (rwe === 3) begin //lb
                 r[Addr_D][7:0] <= Data_D[7:0];
             end else
-            if (rwe == 4) begin //lhu
+            if (rwe === 4) begin //lhu
                 r[Addr_D][31:16] <= 0;
                 r[Addr_D][15:0] <= Data_D[15:0];
             end else
-            if (rwe == 5) begin //lbu
+            if (rwe === 5) begin //lbu
                 r[Addr_D][31:8] <= 0;
                 r[Addr_D][7:0] <= Data_D[7:0];
             end

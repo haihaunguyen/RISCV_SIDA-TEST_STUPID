@@ -20,12 +20,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module datapath(clk, pc, reset, load_ins, load_data_rgf, data_register_file, inst_out, out_m5, out_m2); 
-    input[1023:0] load_ins, load_data_rgf;
+module datapath(clk, pc, reset, load_ins, load_data_rgf, data_register_file, inst_out, out_m5, out_m2, dmem); 
+    input[10239:0] load_ins, load_data_rgf;
     input reset;
     output reg[31:0] pc = 0;
     output wire[1023:0] data_register_file;
     output wire[31:0] inst_out, out_m2, out_m5;
+    output wire[1023:0] dmem;
     input clk;
     wire[4:0] Addr_A, Addr_B, Addr_D;
     wire[3:0] alu_ctl;
@@ -50,7 +51,7 @@ module datapath(clk, pc, reset, load_ins, load_data_rgf, data_register_file, ins
     
     ALU alu(.a(out_m3), .b(out_m4), .s(alu_ctl), .result(result_ALU));
     
-    DMEM Dmem(.clk(clk), .reset(reset), .rwe(rwe_dmem), .Data_in(Data_B), .Addr(result_ALU), .Data_out(Dmem_out));
+    DMEM Dmem(.clk(clk), .reset(reset), .rwe(rwe_dmem), .Data_in(Data_B), .Addr(result_ALU), .Data_out(Dmem_out), .dmem(dmem));
     
     mux_2x32 m1( .a(result_ALU), .b(Dmem_out), .s(rgf_mux_sel), .o(out_m1));
     

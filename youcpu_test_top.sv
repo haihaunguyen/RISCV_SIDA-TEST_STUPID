@@ -29,7 +29,7 @@ module youcpu_test_top();
     
     datapath dut(.clk(io.dut.clk), .pc(io.dut.pc), .reset(io.dut.reset), 
     .load_ins(io.dut.load_ins), .load_data_rgf(io.dut.load_data_rgf),
-     .data_register_file(io.dut.data_register_file), .inst_out(io.dut.inst_out)); 
+     .data_register_file(io.dut.data_register_file), .inst_out(io.dut.inst_out) , .dmem(io.dut.dmem)); 
      
     test test_program(io.tb);
     initial begin
