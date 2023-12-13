@@ -28,21 +28,7 @@ module DMEM(
     output reg[31:0] Data_out,
     output reg[1023:0] dmem
     );
-    
-    always @(posedge clk) begin        
-            if (rwe == 1) begin //SW
-                dmem[((8*Addr)+31)-:32] <= Data_in;
-            end else
-            if (rwe == 2) begin // SH
-                dmem[((8*Addr)+15)-:16] <= Data_in[15:0];
-            end else
-            if (rwe == 3) begin //SB
-                dmem[((8*Addr)+7)-:8] <= Data_in[7:0];
-            end
-        
-    end
-
-    always @(posedge clk) begin
+    always @(posedge clk) begin     
         if (reset == 1) begin 
             dmem[((8*0)+31)-:32] <= 5; 
             dmem[((8*4)+31)-:32] <= 16; 
@@ -64,10 +50,20 @@ module DMEM(
             dmem[((8*68)+31)-:32] <= 7;
             dmem[((8*72)+31)-:32] <= 11;
            // dmem <= 0;       
-        end else
+        end else   
+            if (rwe == 1) begin //SW
+                dmem[((8*Addr)+31)-:32] <= Data_in;
+            end else
+            if (rwe == 2) begin // SH
+                dmem[((8*Addr)+15)-:16] <= Data_in[15:0];
+            end else
+            if (rwe == 3) begin //SB
+                dmem[((8*Addr)+7)-:8] <= Data_in[7:0];
+            end  
+    end
+    always @(*) begin   
         if (rwe == 0) begin //read
-                Data_out <= dmem[((8*Addr)+31)-:32];
+            Data_out <= dmem[((8*Addr)+31)-:32];
         end
     end
-    
 endmodule

@@ -36,9 +36,9 @@ module datapath(clk, pc, reset, load_ins, load_data_rgf, data_register_file, ins
     wire[1:0] Gen_im_sel, rwe_dmem;
     wire[19:0] imm_to_gen;
     
-    IMEM imem(.clk(clk), .reset(reset), .out_m2(out_m2), .out_m5(out_m5), .inst_out(inst_out), .load_ins(load_ins));
+    IMEM imem(.clk(clk), .reset(reset), .out_m2(out_m2), .out_m5(out_m5), .inst_out(inst_out), .load_ins(load_ins), .pc(pc));
     
-    Controller in_de(.clk(clk), .rw_rf(rw_rf), .Inst(inst_out), .rd(Addr_D), .rs1(Addr_A), .rs2(Addr_B), .alu_ctl(alu_ctl), .imm_mux_sel(imm_mux_sel), 
+    Controller in_de(.reset(reset), .clk(clk), .rw_rf(rw_rf), .Inst(inst_out), .rd(Addr_D), .rs1(Addr_A), .rs2(Addr_B), .alu_ctl(alu_ctl), .imm_mux_sel(imm_mux_sel), 
     .Gen_im_sel(Gen_im_sel), .imm_to_gen(imm_to_gen), .rgf_mux_sel(rgf_mux_sel), .rwe_dmem(rwe_dmem), .pc_mux(pc_mux),
     .branch(result_ALU[0]), .pc_to_alu(pc_to_alu), .pc_jal(pc_jal), .pc_jalr(pc_jalr));
     
@@ -61,7 +61,7 @@ module datapath(clk, pc, reset, load_ins, load_data_rgf, data_register_file, ins
     mux_2x32 m5( .a(pc), .b(Data_A), .s(pc_jalr), .o(out_m5));
     always @(posedge clk) begin
         if (reset) begin
-            pc <= 0;
+            pc <= -4;
         end else
         pc =  out_m5 + out_m2;
     end

@@ -21,7 +21,7 @@
 
 
 module Controller(
-    input clk, branch,
+    input clk, branch, reset,
     input[31:0] Inst,
     output reg[4:0] rd, rs1, rs2,
     output reg[3:0] alu_ctl,
@@ -34,6 +34,15 @@ module Controller(
     );
 
     always @(*) begin
+        if (reset) begin
+            pc_jalr = 0;
+            pc_jal = 0;
+            pc_to_alu = 0;
+            pc_mux = 0;
+            imm_mux_sel = 0;
+            rw_rf = 1;
+            rgf_mux_sel = 0;
+        end
         rs1 = Inst[19:15];
         rs2 = Inst[24:20];
         rd = Inst[11:7];

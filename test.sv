@@ -22,7 +22,7 @@
 class gen;  
     Packet pkt2send;
     bit[31:0] inst_arr[$];
-    int pkts_generated = 150;
+    int pkts_generated = 500;
     shortreal result_cov = 0;
     shortreal result_cov_int = 0;
     shortreal result_cov_load = 0;
@@ -273,6 +273,10 @@ class driver;
      bit[1023:0] load_data_rgf;
      bit[31:0] inst_arr[$];
      int num_of_ins;
+     virtual yourcpu_io.tb x;
+     function new(virtual yourcpu_io.tb t);
+        x = t;
+     endfunction: new;
      task get_infor(bit[31:0] inst_arr[$], int num);
         this.inst_arr = inst_arr;
         num_of_ins = num;
@@ -285,6 +289,12 @@ class driver;
      load_data_rgf = 1024'h0000000000000004000000080000000c0000001000000014000000180000001c0000002000000024000000280000002c0000003000000034000000380000003c0000004000000044000000480000004c0000005000000054000000580000005c0000006000000064000000680000006c0000007000000078000000740000007c;   //initial value for register  
      endtask: drive;
   
+    task exe();
+         x.load_ins[223:0] = 224'h010002ef401101b3018002ef000214630001a233402081b306302023; //code for ABS
+         x.load_ins[10239:224] = load_ins[10239:0];
+         x.load_ins[(10176 + 32 - 1 ) -:32] = 64'h00000667;
+         x.load_data_rgf = load_data_rgf;
+    endtask
 endclass: driver;
 //#######################################################################################################################################################
 program automatic test(yourcpu_io.tb t);
@@ -299,7 +309,7 @@ int f,ff;
         f = $fopen("./REGISTER_STATUS.txt", "w");
         ff = $fopen("./DMEM_STATUS.txt", "w");
         a = new();
-        d = new();
+        d = new(t);
         //#######CHOOSE TEST MODE############
         a.gen_all();
        // a.gen_integer();
@@ -308,15 +318,14 @@ int f,ff;
         a.show_hex();
         d.get_infor(a.inst_arr, a.pkts_generated);
         d.drive();
+        d.exe();
         run();
         
     end
     
     task run();
        // t.load_ins[543:0] = 544'h00100f93fe0b02e300022b3340218233fc0a1ee3000a0a630040809300450533015a0a33000b1c6300022b33403102330280a1830000a10300000513fff00a9300a00a13; //code for SAD
-         t.load_ins[223:0] = 224'h010002ef401101b3018002ef000214630001a233402081b306302023; //code for ABS
-         t.load_ins[10239:224] = d.load_ins[10239:0];
-         t.load_ins[(5056 + 32 - 1 ) -:32] = 64'h00400667;
+
 
         /////////////////////////////////////////////////////////// FOR BRANCH TEST///////////////////////////////////////////////
 //        t.load_ins = 160'hfea04ae3fea85ee3000294630000846300000093;
@@ -329,7 +338,7 @@ int f,ff;
 //         .L4: 
 //         	blt x0, x10, .L0;
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        t.load_data_rgf = d.load_data_rgf;
+        
       //  t.load_data_rgf = 0 ;
         #(cycle/2) t.reset = 1;
         #(cycle) t.reset = 0;
@@ -343,9 +352,9 @@ int f,ff;
                     $fdisplay(ff,"");
                 end
             end
-            $fdisplay(f,"PC: %0d", io.dut.pc-4);
+            $fdisplay(f,"PC: %0d", io.dut.pc);
             $fdisplay(f,"CODE RUN: %h", io.dut.inst_out);
-            $fdisplay(ff,"PC: %0d", io.dut.pc-4);
+            $fdisplay(ff,"PC: %0d", io.dut.pc);
             $fdisplay(ff,"CODE RUN: %h", io.dut.inst_out);
             ii = ii + 1;
         

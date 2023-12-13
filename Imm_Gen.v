@@ -21,12 +21,14 @@
 
 
 module Imm_Gen(
+    input reset,
     input[1:0] Gen_im_sel,
     input[19:0] in,
     output reg[31:0] out
     );
 
     always @(*) begin
+        if (reset==1) out = 1;
         case (Gen_im_sel)
             0:
                 begin

@@ -92,9 +92,6 @@ class Packet;
       
     }
 
-
-
-
     task mode_test(int c);
         if (c == 0) begin
             Integer_Instruction.constraint_mode(1);

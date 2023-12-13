@@ -25,7 +25,7 @@ module Register_File(
     input[2:0] rwe,
     input[31:0] Data_D, 
     input[4:0] Addr_D, Addr_A, Addr_B,
-    output reg[31:0] Data_A, Data_B,
+    output[31:0] Data_A, Data_B,
     input[1023:0] load_data_rgf,
     output wire[1023:0] data_register_file
     );
@@ -63,7 +63,7 @@ module Register_File(
     assign data_register_file[((30*32)+31)-:32] = r[30];
     assign data_register_file[((31*32)+31)-:32] = r[31];
     
-    always @(clk) begin
+    always @(posedge clk) begin
         if (reset == 1) begin
         r[0] <= 0;
         r[1] <= load_data_rgf[((1*32)+31)-:32];
@@ -99,28 +99,34 @@ module Register_File(
         r[31] <= load_data_rgf[((31*32)+31)-:32]; 
         end else if (reset == 0)
         begin
-             //read
-            Data_A <= r[Addr_A];
-            Data_B <= r[Addr_B];
-     
             if (rwe === 1) begin //write
                 if (Addr_D != 0)
                 r[Addr_D] <= Data_D;
             end else
             if (rwe === 2) begin //lh
+                if (Addr_D != 0)
                 r[Addr_D][15:0] <= Data_D[15:0];
             end else
             if (rwe === 3) begin //lb
+                if (Addr_D != 0)
                 r[Addr_D][7:0] <= Data_D[7:0];
             end else
             if (rwe === 4) begin //lhu
+                if (Addr_D != 0) begin
                 r[Addr_D][31:16] <= 0;
                 r[Addr_D][15:0] <= Data_D[15:0];
+                end
             end else
             if (rwe === 5) begin //lbu
-                r[Addr_D][31:8] <= 0;
-                r[Addr_D][7:0] <= Data_D[7:0];
+                if (Addr_D != 0)
+                begin
+                    r[Addr_D][31:8] <= 0;
+                    r[Addr_D][7:0] <= Data_D[7:0];
+                end
             end
         end
     end  
+    //read
+    assign Data_A = r[Addr_A];
+    assign Data_B = r[Addr_B];
 endmodule
